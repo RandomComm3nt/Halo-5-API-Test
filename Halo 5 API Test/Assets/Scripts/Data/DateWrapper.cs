@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Assets
 {
-    public class JsonDate
+    public class DateWrapper
     {
         public string ISO8601Date;
     }
