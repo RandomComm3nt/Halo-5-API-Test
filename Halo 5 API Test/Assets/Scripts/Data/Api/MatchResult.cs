@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Assets.Scripts.Data
+namespace Assets.Scripts.Data.Api
 {
     [Serializable]
-    public class PlayerMatchResult
+    public class MatchResult
     {
         public Guid MapId;
         public Guid HopperId;
         public Guid GameBaseVariantId;
         public MatchIdWrapper Id;
         public DateWrapper MatchCompletedDate;
+        public string SeasonId;
     }
 }

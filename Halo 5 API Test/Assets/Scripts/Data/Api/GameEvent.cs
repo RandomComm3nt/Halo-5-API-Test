@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using UnityEngine;
 
-namespace Assets.Scripts.Data
+namespace Assets.Scripts.Data.Api
 {
     [Serializable]
     public class GameEvent
@@ -14,6 +13,10 @@ namespace Assets.Scripts.Data
         public int KillerStockId;
         public int DeathDisposition;
         public string TimeSinceStart;
+        public Vector3 KillerWorldLocation;
+        public Vector3 VictimWorldLocation;
+        public int KillerAgent;
+        public int VictimAgent;
 
         public TimeSpan GetTimeSinceStart()
         {
