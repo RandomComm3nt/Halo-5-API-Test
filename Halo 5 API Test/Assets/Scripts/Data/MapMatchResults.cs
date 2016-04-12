@@ -6,7 +6,17 @@ namespace Assets.Scripts.Data
 {
     public class MapMatchResults
     {
-        private MapData map;
+        public MapData map;
         private List<MatchResult> seasonMatches;
+
+        public MapMatchResults()
+        {
+            seasonMatches = new List<MatchResult>();
+        }
+
+        public void AddMatch(MatchResult result)
+        {
+            seasonMatches.Add(result);
+        }
     }
 }

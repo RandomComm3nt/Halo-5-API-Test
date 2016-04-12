@@ -1,4 +1,4 @@
-﻿
+﻿using System;
 
 namespace Assets.Scripts.Data.Api
 {
@@ -6,5 +6,6 @@ namespace Assets.Scripts.Data.Api
     {
         public string name;
         public string imageUrl;
+        private Guid id;
     }
 }

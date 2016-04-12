@@ -14,13 +14,15 @@ namespace Assets.Scripts
 
     public class Main : MonoBehaviour
     {
-        private List<MapMatchResults> mapMatchResults;
+        [SerializeField] private MapDataList mapDataList;
+        private Dictionary<SerializableGuid, MapMatchResults> mapMatchResults;
         private int seasonMatches;
         DateTime seasonStart;
 
         private void Start()
         {
             StartCoroutine(LoadSeasonInfo());
+            //StartCoroutine(LoadMapInfo());
         }
 
         private IEnumerator LoadSeasonInfo()
@@ -34,9 +36,18 @@ namespace Assets.Scripts
             seasonStart = DateTime.Parse(seasons[seasons.Count - 1].startDate);
         }
 
+        private IEnumerator LoadMapInfo()
+        {
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+            headers.Add("Ocp-Apim-Subscription-Key", "897acd51b3cd45acbeadeb07d0e72afb");
+            WWW www = new WWW("https://www.haloapi.com/metadata/h5/metadata/maps?", null, headers);
+            yield return www;
+            List<MapMetadata> list = JsonConvert.DeserializeObject<List<MapMetadata>>(DecodeGzip(www.bytes));
+            Debug.Log("Maps loaded");
+        }
+
         public void SubmitGamertag()
         {
-            mapMatchResults = new List<MapMatchResults>();
             StartCoroutine(FindSeasonStart());
         }
 
@@ -96,24 +107,45 @@ namespace Assets.Scripts
                 i += 25;
             }
 
-            Debug.Log("Results: " + results.Count.ToString());
+            SortMatchesToMaps(results);
         }
 
         private void SortMatchesToMaps(List<MatchResult> results)
         {
+            // set up map result list
+            mapMatchResults = new Dictionary<SerializableGuid, MapMatchResults>();
+            for (int i = 0; i < mapDataList.mapData.Count; i++)
+            {
+                MapMatchResults map = new MapMatchResults();
+                map.map = mapDataList.mapData[i];
+                mapMatchResults.Add(mapDataList.mapData[i].Guid, map);
+            }
+
+            // sort matches
             for (int i = 0; i < results.Count; i++)
             {
-
+                try
+                {
+                    mapMatchResults[results[i].MapId].AddMatch(results[i]);
+                }
+                catch (KeyNotFoundException)
+                {
+                    Debug.Log("Map key not found.");
+                }
             }
+
+            Debug.Log("Sorted!");
         }
 
         private string DecodeGzip(byte[] array)
         {
+            // taken and adapted from stackexchange
             using (var memoryStream = new MemoryStream())
             {
                 memoryStream.Write(array, 0, array.Length);
 
-                var buffer = new byte[array.Length];
+                // this is bad, need a way to get correct length
+                var buffer = new byte[array.Length * 4];
 
                 memoryStream.Position = 0;
                 using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))

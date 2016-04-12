@@ -9,8 +9,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cb34a29b6db4685458327c854d8e5ebd, type: 3}
-  m_Name: New Map Data
+  m_Name: Fathom
   m_EditorClassIdentifier: 
+  guid:
+    Value: cc040aa1-f206-11e4-a3e0-24be05e24f7e
   areas:
   - position: {x: -8.74, y: -12.2, z: 1.35}
     size: {x: 2, y: 2, z: 3}

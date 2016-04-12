@@ -4,15 +4,13 @@ using System;
 [CreateAssetMenu]
 public class MapData : ScriptableObject
 {
-    [SerializeField] private Guid guid;
+    [SerializeField] private SerializableGuid guid;
     [SerializeField] private NamedArea[] areas;
 
-    public Guid Guid
+    public SerializableGuid Guid
     {
         get {   return guid;    }
     }
-
-
 }
 
 [Serializable]
