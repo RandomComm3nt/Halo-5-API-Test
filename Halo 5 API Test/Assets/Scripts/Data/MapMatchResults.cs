@@ -21,7 +21,15 @@ namespace Assets.Scripts.Data
 
         public int ResultCount
         {
-            get { return seasonMatches.Count; }
+            get { return SeasonMatches.Count; }
+        }
+
+        public List<MatchResult> SeasonMatches
+        {
+            get
+            {
+                return seasonMatches;
+            }
         }
     }
 }

@@ -21,9 +21,12 @@ namespace Assets.Scripts.Data
             playerKills = new List<GameEvent>();
             playerDeaths = new List<GameEvent>();
             playerAssists = new List<GameEvent>();
+            if (GameEvents == null)
+                return;
+
             for (int i = 0; i < GameEvents.Count; i++)
             {
-                if (GameEvents[i].Killer != null && GameEvents[i].Killer.Gamertag == "RandomComm3nt")
+                //if (GameEvents[i].Killer != null && GameEvents[i].Killer.Gamertag == "RandomComm3nt")
                     playerKills.Add(GameEvents[i]);
                 if (GameEvents[i].Victim != null && GameEvents[i].Victim.Gamertag == "RandomComm3nt")
                     playerDeaths.Add(GameEvents[i]);

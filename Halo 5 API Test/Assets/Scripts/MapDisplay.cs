@@ -23,5 +23,10 @@ namespace Assets.Scripts
         [SerializeField] private Text nameText;
         [SerializeField] private Text countText;
         [SerializeField] private Image image;
+
+        public void Click()
+        {
+            Main.singleton.LoadStats(results.SeasonMatches);
+        }
     }
 }

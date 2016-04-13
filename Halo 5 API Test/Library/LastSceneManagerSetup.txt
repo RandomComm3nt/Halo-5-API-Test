@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/meh.unity
+- path: Assets/App.unity
   isLoaded: 1
   isActive: 1

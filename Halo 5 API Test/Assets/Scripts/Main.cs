@@ -1,4 +1,12 @@
-﻿using UnityEngine;
+﻿/*
+
+Todo:
+- extract headers and settings and keep saved
+
+*/
+
+
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Assets.Scripts.Data;
@@ -18,11 +26,16 @@ namespace Assets.Scripts
         
         [SerializeField] private GameObject gamertagScreen;
         [SerializeField] private MapDisplayScreen mapDisplayScreen;
+        [SerializeField] private GameObject dataDisplayScreen;
 
         public Dictionary<SerializableGuid, MapMatchResults> mapMatchResults;
         private int seasonMatches;
         DateTime seasonStart;
+        public static Main singleton;
         private GameObject currentScreen;
+        private bool loading = false;
+
+        private List<MatchStats> matchStats;
 
         private void Start()
         {
@@ -30,6 +43,7 @@ namespace Assets.Scripts
             //StartCoroutine(LoadMapInfo());
 
             currentScreen = gamertagScreen;
+            singleton = this;
         }
 
         private IEnumerator LoadSeasonInfo()
@@ -38,7 +52,7 @@ namespace Assets.Scripts
             headers.Add("Ocp-Apim-Subscription-Key", "897acd51b3cd45acbeadeb07d0e72afb");
             WWW www = new WWW("https://www.haloapi.com/metadata/h5/metadata/seasons", null, headers);
             yield return www;
-            string s = (www.responseHeaders["CONTENT-ENCODING"] == "gzip" ? DecodeGzip(www.bytes) : www.text);
+            string s = (www.responseHeaders.ContainsKey("CONTENT-ENCODING") && www.responseHeaders["CONTENT-ENCODING"] == "gzip" ? DecodeGzip(www.bytes) : www.text);
             List <Season> seasons = JsonConvert.DeserializeObject<List<Season>>(s);
             seasonStart = DateTime.Parse(seasons[seasons.Count - 1].startDate);
         }
@@ -172,41 +186,28 @@ namespace Assets.Scripts
             }
         }
 
-        //private void LoadMatchStats()
-        //{
-        //    List<WWW> wwwList = new List<WWW>();
-        //    list.matches = new List<MatchStats>();
-        //    for (int i = 0; i < list.ResultCount; i++)
-        //    {
-        //        www = new WWW("https://www.haloapi.com/stats/h5/matches/" + list.Results[i].Id.MatchId.ToString() + "/events", null, headers);
-        //        yield return www;
-        //        list.matches.Add(JsonConvert.DeserializeObject<MatchStats>(www.text));
+        public void LoadStats(List<MatchResult> results)
+        {
+            matchStats = new List<MatchStats>();
+            StartCoroutine(LoadMatchStats(results));
+            SwitchScreen(dataDisplayScreen);
+        }
 
-        //        Image image = Instantiate(matchPrefab).GetComponent<Image>();
-        //        image.rectTransform.SetParent(transform, false);
-        //        image.rectTransform.anchoredPosition = new Vector2((i % 5) * 120, -50 - Mathf.Floor(i / 5f) * 120);
-        //        Text text = image.GetComponentInChildren<Text>();
+        private IEnumerator LoadMatchStats(List<MatchResult> results)
+        {
+            loading = true;
+            Dictionary<string, string> headers = new Dictionary<string, string>();
+            headers.Add("Ocp-Apim-Subscription-Key", "897acd51b3cd45acbeadeb07d0e72afb");
 
-        //        if (list.matches[i] != null)
-        //        {
-        //            eventRenderer.DrawMatchArrows(list.matches[0]);
-        //            int killCount = 0;
-        //            for (int j = 0; j < list.matches[i].GameEvents.Count; j++)
-        //            {
-        //                Debug.Log("new game");
-        //                if (list.matches[i].GameEvents[j].Killer != null && list.matches[i].GameEvents[j].Killer.Gamertag == "RandomComm3nt")
-        //                {
-        //                    killCount++;
-        //                    Debug.Log(list.matches[i].GameEvents[j].KillerWorldLocation);
-        //                    Debug.Log(list.matches[i].GameEvents[j].VictimWorldLocation);
-        //                }
-        //            }
+            for (int i = 0; i < results.Count; i++)
+            {
+                WWW www = new WWW("https://www.haloapi.com/stats/h5/matches/" + results[i].Id.MatchId.ToString() + "/events", null, headers);
+                yield return www;
+                matchStats.Add(JsonConvert.DeserializeObject<MatchStats>(www.text));
+                EventRenderer.singleton.DrawMatchArrows(matchStats[i]);
+            }
 
-        //            text.text = list.Results[i].MatchCompletedDate.ISO8601Date.Substring(0, 10) + "\n" + "Kills: " + killCount.ToString();
-        //        }
-        //        else
-        //            text.text = list.Results[i].MatchCompletedDate.ISO8601Date.Substring(0, 10) + "\n" + "Can't load";
-        //    }
-        //}
+            loading = false;
+        }
     }
 }
