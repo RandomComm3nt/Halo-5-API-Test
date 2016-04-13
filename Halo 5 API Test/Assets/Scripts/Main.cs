@@ -15,14 +15,21 @@ namespace Assets.Scripts
     public class Main : MonoBehaviour
     {
         [SerializeField] private MapDataList mapDataList;
-        private Dictionary<SerializableGuid, MapMatchResults> mapMatchResults;
+        
+        [SerializeField] private GameObject gamertagScreen;
+        [SerializeField] private MapDisplayScreen mapDisplayScreen;
+
+        public Dictionary<SerializableGuid, MapMatchResults> mapMatchResults;
         private int seasonMatches;
         DateTime seasonStart;
+        private GameObject currentScreen;
 
         private void Start()
         {
             StartCoroutine(LoadSeasonInfo());
             //StartCoroutine(LoadMapInfo());
+
+            currentScreen = gamertagScreen;
         }
 
         private IEnumerator LoadSeasonInfo()
@@ -31,8 +38,8 @@ namespace Assets.Scripts
             headers.Add("Ocp-Apim-Subscription-Key", "897acd51b3cd45acbeadeb07d0e72afb");
             WWW www = new WWW("https://www.haloapi.com/metadata/h5/metadata/seasons", null, headers);
             yield return www;
-
-            List<Season> seasons = JsonConvert.DeserializeObject<List<Season>>(www.text);
+            string s = (www.responseHeaders["CONTENT-ENCODING"] == "gzip" ? DecodeGzip(www.bytes) : www.text);
+            List <Season> seasons = JsonConvert.DeserializeObject<List<Season>>(s);
             seasonStart = DateTime.Parse(seasons[seasons.Count - 1].startDate);
         }
 
@@ -134,7 +141,15 @@ namespace Assets.Scripts
                 }
             }
 
-            Debug.Log("Sorted!");
+            SwitchScreen(mapDisplayScreen.gameObject);
+            mapDisplayScreen.Initialise(this);
+        }
+
+        private void SwitchScreen(GameObject obj)
+        {
+            if (currentScreen != null)
+                currentScreen.SetActive(false);
+            obj.SetActive(true);
         }
 
         private string DecodeGzip(byte[] array)
@@ -145,7 +160,7 @@ namespace Assets.Scripts
                 memoryStream.Write(array, 0, array.Length);
 
                 // this is bad, need a way to get correct length
-                var buffer = new byte[array.Length * 4];
+                var buffer = new byte[array.Length * 8];
 
                 memoryStream.Position = 0;
                 using (var gZipStream = new GZipStream(memoryStream, CompressionMode.Decompress))

@@ -6,10 +6,16 @@ public class MapData : ScriptableObject
 {
     [SerializeField] private SerializableGuid guid;
     [SerializeField] private NamedArea[] areas;
+    [SerializeField] private Sprite image;
 
     public SerializableGuid Guid
     {
         get {   return guid;    }
+    }
+
+    public Sprite Image
+    {
+        get{ return image; }
     }
 }
 

@@ -18,5 +18,10 @@ namespace Assets.Scripts.Data
         {
             seasonMatches.Add(result);
         }
+
+        public int ResultCount
+        {
+            get { return seasonMatches.Count; }
+        }
     }
 }
