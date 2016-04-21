@@ -164,6 +164,7 @@ namespace Assets.Scripts
             if (currentScreen != null)
                 currentScreen.SetActive(false);
             obj.SetActive(true);
+            currentScreen = obj;
         }
 
         private string DecodeGzip(byte[] array)
@@ -204,9 +205,11 @@ namespace Assets.Scripts
                 WWW www = new WWW("https://www.haloapi.com/stats/h5/matches/" + results[i].Id.MatchId.ToString() + "/events", null, headers);
                 yield return www;
                 matchStats.Add(JsonConvert.DeserializeObject<MatchStats>(www.text));
+
                 EventRenderer.singleton.DrawMatchArrows(matchStats[i]);
             }
 
+            SwitchScreen(dataDisplayScreen);
             loading = false;
         }
     }

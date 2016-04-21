@@ -26,14 +26,17 @@ namespace Assets.Scripts.Data
 
             for (int i = 0; i < GameEvents.Count; i++)
             {
-                //if (GameEvents[i].Killer != null && GameEvents[i].Killer.Gamertag == "RandomComm3nt")
+                if (GameEvents[i].Killer != null && GameEvents[i].Killer.Gamertag == "RandomComm3nt")
                     playerKills.Add(GameEvents[i]);
                 if (GameEvents[i].Victim != null && GameEvents[i].Victim.Gamertag == "RandomComm3nt")
                     playerDeaths.Add(GameEvents[i]);
-                for (int j = 0; j < GameEvents[i].Assistants.Count; j++)
+                if (GameEvents[i].Assistants != null)
                 {
-                    if (GameEvents[i].Assistants[j] != null && GameEvents[i].Assistants[j].Gamertag == "RandomComm3nt")
-                        playerAssists.Add(GameEvents[i]);
+                    for (int j = 0; j < GameEvents[i].Assistants.Count; j++)
+                    {
+                        if (GameEvents[i].Assistants[j] != null && GameEvents[i].Assistants[j].Gamertag == "RandomComm3nt")
+                            playerAssists.Add(GameEvents[i]);
+                    }
                 }
             }
         }

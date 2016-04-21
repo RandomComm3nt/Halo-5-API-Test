@@ -26,12 +26,18 @@ public class EventRenderer : MonoBehaviour
             arrow.transform.SetParent(transform, false);
             SetArrow(arrow, stats.playerKills[i].KillerWorldLocation, stats.playerKills[i].VictimWorldLocation);
         }
+
+        for (int i = 0; i < stats.playerDeaths.Count; i++)
+        {
+            GameObject arrow = Instantiate(playerDeathPrefab);
+            arrow.transform.SetParent(transform, false);
+            SetArrow(arrow, stats.playerDeaths[i].KillerWorldLocation, stats.playerDeaths[i].VictimWorldLocation);
+        }
     }
 
     public void SetArrow(GameObject arrow, Vector3 start, Vector3 end)
     {
-        Debug.Log("delta: " + (end - start).ToString());
-        arrow.transform.localPosition = new Vector3(start.x, start.z, start.y);
+        arrow.transform.localPosition = new Vector3(start.x, start.z + 1, start.y);
         arrow.transform.localScale = new Vector3(1, 1, Vector3.Magnitude(end - start));
         arrow.transform.localRotation = Quaternion.LookRotation(new Vector3(end.x - start.x, end.z - start.z, end.y - start.y), Vector3.up);
     }
